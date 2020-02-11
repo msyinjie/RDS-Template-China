@@ -33,7 +33,7 @@
       "value": 2
     },
     "rdshVmSize": {
-      "value": "Standard_A2"
+      "value": "Standard_D4_v3"
     }
   }
 }
