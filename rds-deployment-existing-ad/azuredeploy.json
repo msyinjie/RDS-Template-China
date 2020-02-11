@@ -91,13 +91,10 @@
       "metadata": {
         "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
       },
-      "defaultValue": "https://raw.githubusercontent.com/msyinjie/RDS-Template-China/master/rds-deployment-existing-ad/"
+      "defaultValue": "https://raw.githubusercontent.com/msyinjie/RDS-Template-China/master/rds-deployment-existing-ad"
     }
   },
   "variables": {
-    "storageAccountName": "[tolower(concat('rdsa', uniqueString(resourceGroup().id)))]",
-    "storageAccountType": "Standard_LRS",
-    "uniqueStorageAccountContainerName": "[concat('sac', resourceGroup().name)]",
     "gwdnsLabelPrefix": "[toLower(concat('gwd', parameters('dnsLabelPrefix')))]",
     "cbdnsLabelPrefix": "[toLower(concat('cbd', parameters('dnsLabelPrefix')))]",
     "imagePublisher": "MicrosoftWindowsServer",
@@ -391,7 +388,6 @@
       "name": "[variables('gatewayVmName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
         "[resourceId('Microsoft.Compute/availabilitySets', 'gw-availabilityset')]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('gatewayNicName'))]"
       ],
@@ -475,7 +471,6 @@
         "count": "[parameters('numberOfRdshInstances')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
         "[resourceId('Microsoft.Compute/availabilitySets', 'rdsh-availabilityset')]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('rdshVmName'), padLeft(add(copyindex(), 1), 2, '0'), variables('networkNameSuffix'))]"
       ],
@@ -555,7 +550,6 @@
       "name": "[variables('brokerVmName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
         "[resourceId('Microsoft.Compute/availabilitySets', 'cb-availabilityset')]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('brokerNicName'))]",
         "rdsh-vm-loop"
