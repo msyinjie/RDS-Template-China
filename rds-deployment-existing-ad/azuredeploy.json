@@ -154,30 +154,39 @@
       "type": "Microsoft.Compute/availabilitySets",
       "name": "gw-availabilityset",
       "properties": {
-        "PlatformUpdateDomainCount": 20,
+        "PlatformUpdateDomainCount": 5,
         "PlatformFaultDomainCount": 2
     },
-      "location": "[resourceGroup().location]"
+      "location": "[resourceGroup().location]",           
+       "sku": {
+        "name": "Aligned"
+      }
     },
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "cb-availabilityset",
       "properties": {
-        "PlatformUpdateDomainCount": 20,
+        "PlatformUpdateDomainCount": 5,
         "PlatformFaultDomainCount": 2
     },
-      "location": "[resourceGroup().location]"
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Aligned"
+      }
     },
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "rdsh-availabilityset",
       "properties": {
-        "PlatformUpdateDomainCount": 20,
+        "PlatformUpdateDomainCount": 5,
         "PlatformFaultDomainCount": 2
     },
-      "location": "[resourceGroup().location]"
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Aligned"
+      }
     },
     {
       "apiVersion": "2015-06-15",
