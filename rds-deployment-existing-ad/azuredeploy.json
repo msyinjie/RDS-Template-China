@@ -152,17 +152,6 @@
         }
       }
     },
-/* 
-    {
-      "apiVersion": "2015-06-15",
-      "type": "Microsoft.Storage/storageAccounts",
-      "name": "[variables('storageAccountName')]",
-      "location": "[resourceGroup().location]",
-      "properties": {
-        "accountType": "[variables('storageAccountType')]"
-      }
-    },
- */
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/availabilitySets",
