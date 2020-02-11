@@ -595,9 +595,10 @@
             }
           ]
         }
-      }
-    },
-    {
+      },
+    "resources": [
+      {
+      "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('brokerVmName'),'/rdsdeployment')]",
       "apiVersion": "2015-06-15",
@@ -634,6 +635,8 @@
           }
         }
       }
+    }
+  ]
     }
   ],
   "outputs": {
