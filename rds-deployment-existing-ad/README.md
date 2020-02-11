@@ -8,7 +8,7 @@ The template will use existing DC, join all vms to the domain and configure RDS 
 
 Click the button below to deploy
 
-<a href="https://portal.azure.cn/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmsyinjie%2FRDS-Template-china%2Fmaster%2Frds-deployment-existing-ad%2Fazuredeploy.json" target="_blank">
+<a href="https://portal.azure.cn/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmsyinjie%2FRDS-Template-China%2Fmaster%2Frds-deployment-existing-ad%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 

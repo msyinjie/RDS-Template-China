@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "_artifactsLocation": {
-      "value": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/rds-deployment-existing-ad/"
+      "value": "https://raw.githubusercontent.com/msyinjie/RDS-Template-China/master/rds-deployment-existing-ad/"
     },
     "dnsLabelPrefix": {
       "value": "{enter_unique_external_fqdn_prefix_here (example:%resourceGroupName%)}"
@@ -22,6 +22,9 @@
     },
     "existingVnetName": {
       "value": "vnet"
+    },
+    "existingVnetRgName": {
+      "value": "AD-Group"
     },
     "dnsserverip": {
       "value": "10.0.0.4"

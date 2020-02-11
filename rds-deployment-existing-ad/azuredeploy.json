@@ -5,7 +5,7 @@
     "dnsLabelPrefix": {
       "type": "string",
       "metadata": {
-        "description": "Unique public DNS prefix for the deployment. The fqdn will look something like '<dnsname>.westus.cloudapp.azure.com'. Up to 62 chars, digits or dashes, lowercase, should start with a letter: must conform to '^[a-z][a-z0-9-]{1,61}[a-z0-9]$'. For example johndns1 will result the final RDWEB access url like https://johndns1.westus.cloudapp.azure.com/RDWeb"
+        "description": "Unique public DNS prefix for the deployment. The fqdn will look something like '<dnsname>.chinaeast2.cloudapp.chinacloudapi.cn'. Up to 62 chars, digits or dashes, lowercase, should start with a letter: must conform to '^[a-z][a-z0-9-]{1,61}[a-z0-9]$'. For example johndns1 will result the final RDWEB access url like https://johndns1.chinaeast2.cloudapp.chinacloudapi.cn/RDWeb"
       }
     },
     "existingDomainName": {
@@ -29,12 +29,20 @@
         "description": "The subnet name of AD domain. For example johnsubnet1"
       }
     },
+    "existingVnetRgName": {
+      "type": "string",
+      "defaultValue": "AD-Group",
+      "metadata": {
+        "description": "The Resource Group containing the existing Virtual Network resource"
+      }
+
+    },
     "existingAdminUserName": {
       "type": "string",
       "metadata": {
         "description": "The name of the administrator of the new VM and the domain. Exclusion list: 'administrator'. For example: johnadmin"
       },
-      "defaultValue": "cloudadmin"
+      "defaultValue": "vmadmin"
     },
     "existingAdminPassword": {
       "type": "securestring",
@@ -90,15 +98,19 @@
     "storageAccountName": "[tolower(concat('rdsa', uniqueString(resourceGroup().id)))]",
     "storageAccountType": "Standard_LRS",
     "uniqueStorageAccountContainerName": "[concat('sac', resourceGroup().name)]",
+    "gwdnsLabelPrefix": "[toLower(concat('gwd', parameters('dnsLabelPrefix')))]",
+    "cbdnsLabelPrefix": "[toLower(concat('cbd', parameters('dnsLabelPrefix')))]",
     "imagePublisher": "MicrosoftWindowsServer",
     "imageOffer": "WindowsServer",
     "dnsServerPrivateIp": "[parameters('dnsserverip')]",
-    "subnet-id": "[concat(resourceId('Microsoft.Network/virtualNetworks',parameters('existingVnetName')),'/subnets/',parameters('existingSubnetName'))]",
+    "subnet-id": "[concat(resourceId(parameters('existingVnetRgName'),'Microsoft.Network/virtualNetworks',parameters('existingVnetName')),'/subnets/',parameters('existingSubnetName'))]",
     "brokerVmName": "[concat(variables('vmPrefix'), 'rdcb-01')]",
     "brokerNicName": "[concat(variables('brokerVmName'),variables('networkNameSuffix'))]",
     "gatewayVmName": "[concat(variables('vmPrefix'), 'rdgw-01')]",
     "gatewayNicName": "[concat(variables('gatewayVmName'),variables('networkNameSuffix'))]",
-    "gatewayIpRef": "gwpip",
+    "publicIpRef": "publicIp",
+    "brokerIpRef": "brokerpublicIp",
+    "gatewayIpRef": "gatewaypublicIp",
     "networkNameSuffix": "-nic",
     "rdshVmName": "[concat(variables('vmPrefix'), 'rdsh-')]",
     "vmPrefix": ""
@@ -107,7 +119,7 @@
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('gatewayIpRef')]",
+      "name": "[variables('publicIpRef')]",
       "location": "[resourceGroup().location]",
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
@@ -118,6 +130,31 @@
     },
     {
       "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('brokerIpRef')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "dnsSettings": {
+          "domainNameLabel": "[parameters('cbdnsLabelPrefix')]"
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('gatewayIpRef')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "dnsSettings": {
+          "domainNameLabel": "[parameters('gwdnsLabelPrefix')]"
+        }
+      }
+    },
+/* 
+    {
+      "apiVersion": "2015-06-15",
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('storageAccountName')]",
       "location": "[resourceGroup().location]",
@@ -125,22 +162,35 @@
         "accountType": "[variables('storageAccountType')]"
       }
     },
+ */
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "gw-availabilityset",
+      "properties": {
+        "PlatformUpdateDomainCount": 20,
+        "PlatformFaultDomainCount": 2
+    },
       "location": "[resourceGroup().location]"
     },
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "cb-availabilityset",
+      "properties": {
+        "PlatformUpdateDomainCount": 20,
+        "PlatformFaultDomainCount": 2
+    },
       "location": "[resourceGroup().location]"
     },
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "rdsh-availabilityset",
+      "properties": {
+        "PlatformUpdateDomainCount": 20,
+        "PlatformFaultDomainCount": 2
+    },
       "location": "[resourceGroup().location]"
     },
     {
@@ -149,7 +199,7 @@
       "name": "loadBalancer",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/',variables('gatewayIpRef'))]"
+        "[concat('Microsoft.Network/publicIPAddresses/',variables('publicIpRef'))]"
       ],
       "properties": {
         "frontendIPConfigurations": [
@@ -157,7 +207,7 @@
             "name": "LBFE",
             "properties": {
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('gatewayIpRef'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIpRef'))]"
               }
             }
           }
@@ -228,7 +278,21 @@
               "numberOfProbes": 2
             }
           }
-        ]
+        ],
+        "inboundNatRules": [
+          {
+              "name": "rdp",
+              "properties": {
+                  "frontendIPConfiguration": {
+                      "id": "[concat(resourceId('Microsoft.Network/loadBalancers','loadBalancer'),'/frontendIPConfigurations/LBFE')]"
+                  },
+                  "protocol": "Tcp",
+                  "frontendPort": 3389,
+                  "backendPort": 3389,
+                  "enableFloatingIP": false
+              }
+          }
+      ]
       }
     },
     {
@@ -245,6 +309,9 @@
             "name": "ipconfig",
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('gatewayIpRef'))]"
+            },
               "subnet": {
                 "id": "[variables('subnet-id')]"
               },
@@ -252,10 +319,20 @@
                 {
                   "id": "[concat(resourceId('Microsoft.Network/loadBalancers','loadBalancer'),'/backendAddressPools/LBBAP')]"
                 }
+              ],
+              "loadBalancerInboundNatRules": [
+                {
+                    "id": "[concat(resourceId('Microsoft.Network/loadBalancers','loadBalancer'),'/inboundNatRules/rdp')]"
+                }
               ]
             }
           }
-        ]
+        ],
+        "dnsSettings": {
+          "dnsServers": [
+              "[variables('dnsServerPrivateIp')]"
+          ]
+      }
       }
     },
     {
@@ -272,12 +349,20 @@
             "name": "ipconfig",
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('brokerIpRef'))]"
+            },
               "subnet": {
                 "id": "[variables('subnet-id')]"
               }
             }
           }
-        ]
+        ],
+        "dnsSettings": {
+          "dnsServers": [
+              "[variables('dnsServerPrivateIp')]"
+          ]
+      }
       }
     },
     {
@@ -303,7 +388,12 @@
               }
             }
           }
-        ]
+        ],
+        "dnsSettings": {
+          "dnsServers": [
+              "[variables('dnsServerPrivateIp')]"
+          ]
+      }
       }
     },
     {
@@ -336,12 +426,12 @@
             "version": "latest"
           },
           "osDisk": {
-            "name": "osdisk",
-            "vhd": {
-              "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName')),providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).primaryEndpoints.blob,variables('uniqueStorageAccountContainerName'),'/','gw-vm-os-disk.vhd')]"
-            },
+            "name": "gw_osdisk",
             "caching": "ReadWrite",
-            "createOption": "FromImage"
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+          }
           }
         },
         "networkProfile": {
@@ -421,11 +511,11 @@
           },
           "osDisk": {
             "name": "osdisk",
-            "vhd": {
-              "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName')),providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).primaryEndpoints.blob,variables('uniqueStorageAccountContainerName'),'/',variables('rdshVmName'),padLeft(add(copyindex(), 1), 2, '0'),'-os-disk.vhd')]"
-            },
             "caching": "ReadWrite",
-            "createOption": "FromImage"
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+          }
           }
         },
         "networkProfile": {
@@ -502,11 +592,11 @@
           },
           "osDisk": {
             "name": "osdisk",
-            "vhd": {
-              "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName')),providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).primaryEndpoints.blob,variables('uniqueStorageAccountContainerName'),'/',concat(variables('brokerVmName'), '-os-disk.vhd'))]"
-            },
             "caching": "ReadWrite",
-            "createOption": "FromImage"
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+          }
           }
         },
         "networkProfile": {
@@ -560,11 +650,11 @@
   "outputs": {
     "fqdn": {
       "type": "string",
-      "value": "[reference(variables('gatewayIpRef')).dnsSettings.fqdn]"
+      "value": "[reference(variables('publicIpRef')).dnsSettings.fqdn]"
     },
     "rdWebUrl": {
       "type": "string",
-      "value": "[concat('https://', reference(variables('gatewayIpRef')).dnsSettings.fqdn, '/rdweb')]"
+      "value": "[concat('https://', reference(variables('publicIpRef')).dnsSettings.fqdn, '/rdweb')]"
     }
   }
 }
