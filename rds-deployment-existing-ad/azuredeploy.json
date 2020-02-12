@@ -100,7 +100,9 @@
     "imagePublisher": "MicrosoftWindowsServer",
     "imageOffer": "WindowsServer",
     "dnsServerPrivateIp": "[parameters('dnsserverip')]",
+    "vnet-id": "[resourceId(parameters('existingVnetRgName'),'Microsoft.Network/virtualNetworks',parameters('existingVnetName'))]",
     "subnet-id": "[concat(resourceId(parameters('existingVnetRgName'),'Microsoft.Network/virtualNetworks',parameters('existingVnetName')),'/subnets/',parameters('existingSubnetName'))]",
+    "vnetlocation": "[reference(variables('vnet-id'),'2015-06-15','Full').location]",
     "brokerVmName": "[concat(variables('vmPrefix'), 'rdcb-01')]",
     "brokerNicName": "[concat(variables('brokerVmName'),variables('networkNameSuffix'))]",
     "gatewayVmName": "[concat(variables('vmPrefix'), 'rdgw-01')]",
@@ -117,7 +119,7 @@
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('publicIpRef')]",
-      "location": "[resourceGroup().location]",
+      "location": "[variables('vnetlocation')]",
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
@@ -129,7 +131,7 @@
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('brokerIpRef')]",
-      "location": "[resourceGroup().location]",
+      "location": "[variables('vnetlocation')]",
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
@@ -141,7 +143,7 @@
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[variables('gatewayIpRef')]",
-      "location": "[resourceGroup().location]",
+      "location": "[variables('vnetlocation')]",
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
@@ -157,7 +159,7 @@
         "PlatformUpdateDomainCount": 5,
         "PlatformFaultDomainCount": 2
     },
-      "location": "[resourceGroup().location]",           
+      "location": "[variables('vnetlocation')]",           
        "sku": {
         "name": "Aligned"
       }
@@ -170,7 +172,7 @@
         "PlatformUpdateDomainCount": 5,
         "PlatformFaultDomainCount": 2
     },
-      "location": "[resourceGroup().location]",
+      "location": "[variables('vnetlocation')]",
       "sku": {
         "name": "Aligned"
       }
@@ -183,7 +185,7 @@
         "PlatformUpdateDomainCount": 5,
         "PlatformFaultDomainCount": 2
     },
-      "location": "[resourceGroup().location]",
+      "location": "[variables('vnetlocation')]",
       "sku": {
         "name": "Aligned"
       }
@@ -192,7 +194,7 @@
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/loadBalancers",
       "name": "loadBalancer",
-      "location": "[resourceGroup().location]",
+      "location": "[variables('vnetlocation')]",
       "dependsOn": [
         "[concat('Microsoft.Network/publicIPAddresses/',variables('publicIpRef'))]"
       ],
@@ -294,7 +296,7 @@
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('gatewayNicName')]",
-      "location": "[resourceGroup().location]",
+      "location": "[variables('vnetlocation')]",
       "dependsOn": [
         "Microsoft.Network/loadBalancers/loadBalancer"
       ],
@@ -334,7 +336,7 @@
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('brokerNicName')]",
-      "location": "[resourceGroup().location]",
+      "location": "[variables('vnetlocation')]",
       "dependsOn": [
         "Microsoft.Network/loadBalancers/loadBalancer"
       ],
@@ -364,7 +366,7 @@
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(variables('rdshVmName'), padLeft(add(copyindex(), 1), 2, '0'), variables('networkNameSuffix'))]",
-      "location": "[resourceGroup().location]",
+      "location": "[variables('vnetlocation')]",
       "copy": {
         "name": "rdsh-nic-loop",
         "count": "[parameters('numberOfRdshInstances')]"
@@ -395,7 +397,7 @@
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('gatewayVmName')]",
-      "location": "[resourceGroup().location]",
+      "location": "[variables('vnetlocation')]",
       "dependsOn": [
         "[resourceId('Microsoft.Compute/availabilitySets', 'gw-availabilityset')]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('gatewayNicName'))]"
@@ -441,7 +443,7 @@
           "apiVersion": "2015-06-15",
           "type": "Microsoft.Compute/virtualMachines/extensions",
           "name": "[concat(variables('gatewayVmName'), '/gateway')]",
-          "location": "[resourceGroup().location]",
+          "location": "[variables('vnetlocation')]",
           "dependsOn": [
             "[resourceId('Microsoft.Compute/virtualMachines', variables('gatewayVmName'))]"
           ],
@@ -474,7 +476,7 @@
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(variables('rdshVmName'), padLeft(add(copyindex(), 1), 2, '0'))]",
-      "location": "[resourceGroup().location]",
+      "location": "[variables('vnetlocation')]",
       "copy": {
         "name": "rdsh-vm-loop",
         "count": "[parameters('numberOfRdshInstances')]"
@@ -524,7 +526,7 @@
           "apiVersion": "2015-06-15",
           "type": "Microsoft.Compute/virtualMachines/extensions",
           "name": "[concat(variables('rdshVmName'), padLeft(add(copyindex(), 1), 2, '0'),'/sessionhost')]",
-          "location": "[resourceGroup().location]",
+          "location": "[variables('vnetlocation')]",
           "dependsOn": [
             "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('rdshVmName'), padLeft(add(copyindex(), 1), 2, '0')))]"
           ],
@@ -557,7 +559,7 @@
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('brokerVmName')]",
-      "location": "[resourceGroup().location]",
+      "location": "[variables('vnetlocation')]",
       "dependsOn": [
         "[resourceId('Microsoft.Compute/availabilitySets', 'cb-availabilityset')]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('brokerNicName'))]",
@@ -605,7 +607,7 @@
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('brokerVmName'),'/rdsdeployment')]",
       "apiVersion": "2015-06-15",
-      "location": "[resourceGroup().location]",
+      "location": "[variables('vnetlocation')]",
       "dependsOn": [
         "[resourceId('Microsoft.Compute/virtualMachines', variables('brokerVmName'))]",
         "[concat('Microsoft.Compute/virtualMachines/',variables('gatewayVmName'),'/extensions/gateway')]",
