@@ -37,6 +37,12 @@
     },
     "rdshVmSize": {
       "value": "Standard_D4_v3"
-    }
+    },
+    "dataDiskCountPerVM": {
+      "value": 1
+  },
+  "dataDiskSizeInGB": {
+      "value": 128
+  }
   }
 }

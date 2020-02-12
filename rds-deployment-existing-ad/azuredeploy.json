@@ -79,6 +79,22 @@
         "description": "The size of the RDSH VMs"
       }
     },
+    "dataDiskCountPerVM": {
+      "metadata": {
+          "description": "Number of data disks per RDSH VM"
+      },
+      "defaultValue": 1,
+      "minValue": 1,
+      "maxValue": 2,
+      "type": "int"
+  },
+  "dataDiskSizeInGB": {
+      "defaultValue": 128,
+      "metadata": {
+          "description": "Size of each data disk"
+      },
+      "type": "int"
+  },
     "dnsserverip":{
       "type": "string",
       "metadata": {
@@ -504,13 +520,28 @@
             "version": "latest"
           },
           "osDisk": {
-            "name": "[concat('rdsh_osdisk-', padLeft(add(copyindex(), 1), 2, '0'))]",
+            "name": "[concat('rdsh_',padLeft(add(copyindex(), 1), 2, '0'),'_osdisk')]",
             "caching": "ReadWrite",
             "createOption": "FromImage",
             "managedDisk": {
               "storageAccountType": "Standard_LRS"
           }
-          }
+          },
+          "copy": [
+            {
+                "name": "dataDisks",
+                "count": "[parameters('dataDiskCountPerVM')]",
+                "input": {
+                    "name":"[concat('rdsh_',padLeft(add(copyindex('rdsh-vm-loop'), 1), 2, '0'),'_datadisk',copyindex('datadisks'))]",
+                    "managedDisk": {
+                        "storageAccountType": "Standard_LRS"
+                    },
+                    "diskSizeGB": "[parameters('dataDiskSizeInGB')]",
+                    "lun": "[copyIndex('dataDisks')]",
+                    "createOption": "Empty"
+                }
+            }
+        ]
         },
         "networkProfile": {
           "networkInterfaces": [
@@ -605,7 +636,6 @@
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(variables('brokerVmName'),'/rdsdeployment')]",
-      "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
       "dependsOn": [
         "[resourceId('Microsoft.Compute/virtualMachines', variables('brokerVmName'))]",
