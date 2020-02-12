@@ -152,7 +152,7 @@
       }
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "gw-availabilityset",
       "properties": {
@@ -165,7 +165,7 @@
       }
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "cb-availabilityset",
       "properties": {
@@ -178,7 +178,7 @@
       }
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "rdsh-availabilityset",
       "properties": {
@@ -394,7 +394,7 @@
       }
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('gatewayVmName')]",
       "location": "[variables('vnetlocation')]",
@@ -473,7 +473,7 @@
       ]
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(variables('rdshVmName'), padLeft(add(copyindex(), 1), 2, '0'))]",
       "location": "[variables('vnetlocation')]",
@@ -556,7 +556,7 @@
       ]
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('brokerVmName')]",
       "location": "[variables('vnetlocation')]",
