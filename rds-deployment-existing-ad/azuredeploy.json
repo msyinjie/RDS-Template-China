@@ -102,7 +102,6 @@
     "dnsServerPrivateIp": "[parameters('dnsserverip')]",
     "vnet-id": "[resourceId(parameters('existingVnetRgName'),'Microsoft.Network/virtualNetworks',parameters('existingVnetName'))]",
     "subnet-id": "[concat(resourceId(parameters('existingVnetRgName'),'Microsoft.Network/virtualNetworks',parameters('existingVnetName')),'/subnets/',parameters('existingSubnetName'))]",
-    // "vnetlocation": "[reference(variables('vnet-id'),'2015-06-15','Full').location]",
     "brokerVmName": "[concat(variables('vmPrefix'), 'rdcb-01')]",
     "brokerNicName": "[concat(variables('brokerVmName'),variables('networkNameSuffix'))]",
     "gatewayVmName": "[concat(variables('vmPrefix'), 'rdgw-01')]",
