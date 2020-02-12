@@ -134,7 +134,7 @@
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
-          "domainNameLabel": "[parameters('cbdnsLabelPrefix')]"
+          "domainNameLabel": "[variables('cbdnsLabelPrefix')]"
         }
       }
     },
@@ -146,7 +146,7 @@
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
-          "domainNameLabel": "[parameters('gwdnsLabelPrefix')]"
+          "domainNameLabel": "[variables('gwdnsLabelPrefix')]"
         }
       }
     },
@@ -504,7 +504,7 @@
             "version": "latest"
           },
           "osDisk": {
-            "name": "osdisk",
+            "name": "[concat('rdsh_osdisk-', padLeft(add(copyindex(), 1), 2, '0'))]",
             "caching": "ReadWrite",
             "createOption": "FromImage",
             "managedDisk": {
@@ -584,7 +584,7 @@
             "version": "latest"
           },
           "osDisk": {
-            "name": "osdisk",
+            "name": "cb_osdisk",
             "caching": "ReadWrite",
             "createOption": "FromImage",
             "managedDisk": {
@@ -644,11 +644,7 @@
     }
   ],
   "outputs": {
-    "fqdn": {
-      "type": "string",
-      "value": "[reference(variables('publicIpRef')).dnsSettings.fqdn]"
-    },
-    "rdWebUrl": {
+     "rdWebUrl": {
       "type": "string",
       "value": "[concat('https://', reference(variables('publicIpRef')).dnsSettings.fqdn, '/rdweb')]"
     }
