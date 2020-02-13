@@ -85,7 +85,7 @@
       },
       "defaultValue": 1,
       "minValue": 1,
-      "maxValue": 2,
+      "maxValue": 4,
       "type": "int"
   },
   "dataDiskSizeInGB": {
@@ -93,6 +93,8 @@
       "metadata": {
           "description": "Size of each data disk"
       },
+      "minValue": 1,
+      "maxValue": 1023,
       "type": "int"
   },
     "dnsserverip":{
@@ -508,7 +510,7 @@
           "id": "[resourceId('Microsoft.Compute/availabilitySets', 'rdsh-availabilityset')]"
         },
         "osProfile": {
-          "computerName": "[concat(variables('rdshVmName'), padLeft(add(copyindex(), 1), 2, '0'))]",
+          "computerName": "[concat('rdsh-', copyIndex())]",
           "adminUsername": "[parameters('existingAdminUserName')]",
           "adminPassword": "[parameters('existingAdminPassword')]"
         },
