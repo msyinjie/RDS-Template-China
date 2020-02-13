@@ -117,6 +117,7 @@
     "cbdnsLabelPrefix": "[toLower(concat('cbd', parameters('dnsLabelPrefix')))]",
     "imagePublisher": "MicrosoftWindowsServer",
     "imageOffer": "WindowsServer",
+    "licensetype": "Windows_Server",
     "dnsServerPrivateIp": "[parameters('dnsserverip')]",
     "vnet-id": "[resourceId(parameters('existingVnetRgName'),'Microsoft.Network/virtualNetworks',parameters('existingVnetName'))]",
     "subnet-id": "[concat(resourceId(parameters('existingVnetRgName'),'Microsoft.Network/virtualNetworks',parameters('existingVnetName')),'/subnets/',parameters('existingSubnetName'))]",
@@ -420,6 +421,7 @@
         "[concat('Microsoft.Network/networkInterfaces/', variables('gatewayNicName'))]"
       ],
       "properties": {
+        "licenseType":"[variables('licensetype')]",
         "hardwareProfile": {
           "vmSize": "Standard_D4_v3"
         },
@@ -503,6 +505,7 @@
         "[concat('Microsoft.Network/networkInterfaces/', variables('rdshVmName'), padLeft(add(copyindex(), 1), 2, '0'), variables('networkNameSuffix'))]"
       ],
       "properties": {
+        "licenseType":"[variables('licensetype')]",
         "hardwareProfile": {
           "vmSize": "[parameters('rdshVmSize')]"
         },
@@ -599,6 +602,7 @@
       ],
       "properties": {
         "hardwareProfile": {
+          "licenseType":"[variables('licensetype')]",
           "vmSize": "Standard_D4_v3"
         },
         "availabilitySet": {
