@@ -1,0 +1,48 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "_artifactsLocation": {
+      "value": "https://raw.githubusercontent.com/msyinjie/RDS-Template-China/master/rds-deployment-existing-ad"
+    },
+    "dnsLabelPrefix": {
+      "value": "{enter_unique_external_fqdn_prefix_here (example:%resourceGroupName%)}"
+    },
+    "existingAdminPassword": {
+      "value": "{enter_existing_adminUsername_password_here}"
+    },
+    "existingAdminUsername": {
+      "value": "cloudadmin"
+    },
+    "existingDomainName": {
+      "value": "contoso.com"
+    },
+    "existingSubnetName": {
+      "value": "subnet"
+    },
+    "existingVnetName": {
+      "value": "vnet"
+    },
+    "existingVnetRgName": {
+      "value": "AD-Group"
+    },
+    "dnsserverip": {
+      "value": "10.0.0.4"
+    },
+    "imageSKU": {
+      "value": "2019-Datacenter"
+    },
+    "numberOfRdshInstances": {
+      "value": 2
+    },
+    "rdshVmSize": {
+      "value": "Standard_D4_v3"
+    },
+    "dataDiskCountPerVM": {
+      "value": 1
+  },
+  "dataDiskSizeInGB": {
+      "value": 128
+  }
+  }
+}

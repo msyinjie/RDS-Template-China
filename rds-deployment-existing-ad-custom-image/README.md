@@ -63,9 +63,6 @@ Current Template is an extension to the Basic RDS Deployment Template, and it is
     * Number per VM - Data disk number attached the per RDSH server, the value will be 1 to 4, the default is 2.
     * Disk size - Data disk size per disk, the value will be 1 to 1023, the defaut is 128GB.
 
-### Output of template after deployment
-This template will output the **rdWebUrl** vaule after the template deployment completed.This value will be used by connect to RDS deployment later.
-
 ### Post Deployment
 After deployment completes successfully, use one of the options below to connect to the new deployment.
 After deploying this template, the following will need to be configured:
