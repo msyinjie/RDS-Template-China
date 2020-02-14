@@ -61,6 +61,12 @@
       },
       "defaultValue": "2019-Datacenter"
     },
+    "rdshTemplateImageUri": {
+      "type": "string",
+      "metadata": {
+          "description": "URI for the template VHD to use for RDSH instances. For example, https://rdsstorage.blob.core.windows.net/vhds/MyWindowServerOSImage.vhd"
+      }
+    },
     "numberOfRdshInstances": {
       "type": "int",
       "defaultValue": 2,
@@ -130,7 +136,8 @@
     "gatewayIpRef": "gatewaypublicIp",
     "networkNameSuffix": "-nic",
     "rdshVmName": "[concat(variables('vmPrefix'), 'rdsh-')]",
-    "vmPrefix": ""
+    "vmPrefix": "",
+    "imagename":"customimage"
   },
   "resources": [
     {
@@ -492,6 +499,22 @@
       ]
     },
     {
+      "type": "Microsoft.Compute/images",
+      "apiVersion": "2017-03-30",
+      "name": "[variables('imageName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "storageProfile": {
+          "osDisk": {
+            "osType": "Windows",
+            "osState": "Generalized",
+            "blobUri": "[parameters('rdshTemplateImageUri')]",
+            "storageAccountType": "Standard_LRS"
+          }
+        }
+      }
+    },
+    {
       "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(variables('rdshVmName'), padLeft(add(copyindex(), 1), 2, '0'))]",
@@ -519,13 +542,11 @@
         },
         "storageProfile": {
           "imageReference": {
-            "publisher": "[variables('imagePublisher')]",
-            "offer": "[variables('imageOffer')]",
-            "sku": "[parameters('imageSKU')]",
-            "version": "latest"
+            "id": "[resourceId('Microsoft.Compute/images', variables('imagename'))]"
           },
           "osDisk": {
             "name": "[concat('rdsh_',padLeft(add(copyindex(), 1), 2, '0'),'_osdisk')]",
+            "osType": "Windows",
             "caching": "ReadWrite",
             "createOption": "FromImage",
             "managedDisk": {
