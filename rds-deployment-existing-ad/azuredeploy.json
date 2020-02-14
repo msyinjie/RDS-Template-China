@@ -601,8 +601,8 @@
         "rdsh-vm-loop"
       ],
       "properties": {
+        "licenseType":"[variables('licensetype')]",
         "hardwareProfile": {
-          "licenseType":"[variables('licensetype')]",
           "vmSize": "Standard_D4_v3"
         },
         "availabilitySet": {

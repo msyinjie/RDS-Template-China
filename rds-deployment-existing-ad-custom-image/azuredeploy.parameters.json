@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "_artifactsLocation": {
-      "value": "https://raw.githubusercontent.com/msyinjie/RDS-Template-China/master/rds-deployment-existing-ad"
+      "value": "https://raw.githubusercontent.com/msyinjie/RDS-Template-China/master/rds-deployment-existing-ad-custom-image"
     },
     "dnsLabelPrefix": {
       "value": "{enter_unique_external_fqdn_prefix_here (example:%resourceGroupName%)}"
@@ -18,10 +18,10 @@
       "value": "contoso.com"
     },
     "existingSubnetName": {
-      "value": "subnet"
+      "value": "AD-Subnet"
     },
     "existingVnetName": {
-      "value": "vnet"
+      "value": "AD-Vnet"
     },
     "existingVnetRgName": {
       "value": "AD-Group"
@@ -38,10 +38,13 @@
     "rdshVmSize": {
       "value": "Standard_D4_v3"
     },
+    "rdshTemplateImageUri": {
+      "value": "{enter_vhd_location_used_with_RDSH_VM_OS(example:https://rdsstorge.blob.core.chinacloudapi.cn/vhds/WindowServerOSImage.vhd)}"
+    },
     "dataDiskCountPerVM": {
       "value": 1
   },
-  "dataDiskSizeInGB": {
+    "dataDiskSizeInGB": {
       "value": 128
   }
   }

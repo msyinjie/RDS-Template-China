@@ -64,7 +64,7 @@
     "rdshTemplateImageUri": {
       "type": "string",
       "metadata": {
-          "description": "URI for the template VHD to use for RDSH instances. For example, https://rdsstorage.blob.core.windows.net/vhds/MyWindowServerOSImage.vhd"
+          "description": "URI for the template VHD to use for RDSH instances. For example, https://rdsstorge.blob.core.chinacloudapi.cn/vhds/WindowServerOSImage.vhd, this image MUST based on Windows Server 2016 or Windows Server 2019."
       }
     },
     "numberOfRdshInstances": {
@@ -115,7 +115,7 @@
       "metadata": {
         "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
       },
-      "defaultValue": "https://raw.githubusercontent.com/msyinjie/RDS-Template-China/master/rds-deployment-existing-ad"
+      "defaultValue": "https://raw.githubusercontent.com/msyinjie/RDS-Template-China/master/rds-deployment-existing-ad-custom-image"
     }
   },
   "variables": {
@@ -137,7 +137,7 @@
     "networkNameSuffix": "-nic",
     "rdshVmName": "[concat(variables('vmPrefix'), 'rdsh-')]",
     "vmPrefix": "",
-    "imagename":"customimage"
+    "imagename":"RDSHVM_Template_Image"
   },
   "resources": [
     {
@@ -622,8 +622,8 @@
         "rdsh-vm-loop"
       ],
       "properties": {
+        "licenseType":"[variables('licensetype')]",
         "hardwareProfile": {
-          "licenseType":"[variables('licensetype')]",
           "vmSize": "Standard_D4_v3"
         },
         "availabilitySet": {
