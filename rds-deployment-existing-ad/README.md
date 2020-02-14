@@ -57,10 +57,10 @@ Current Template is an extension to the Basic RDS Deployment Template, and it is
 * imageSKU - operating system version for all instances. '2016-Datacenter' or '2019-Datacenter',the default is '2019-Datacenter'.
     * PowerShell enumeration: ```Get-AzureRmVMImageSku -Location $location -PublisherName MicrosoftWindowsServer -Offer WindowsServer```
 * numberOfRdshInstances - number of RDS host servers to deploy. Other instances gateway, and broker are set to 1 instance.
-* rdshVmSize - virtual machine size for the RDS host server instances only. Other instances gateway, and broker are set to size Standard_D4_v3. 
+* rdshVmSize - virtual machine size for the RDS host server instances only. Other instances gateway, and broker are set to size **Standard_D4_v3**. 
     * PowerShell enumeration: ```Get-AzureRmVMSize -Location $location```
-* Data disk attached the RDSH server
-    * Number per VM - Data disk number attached the per RDSH server, the value will be 1 to 4, the default is 2.
+* Data disk attached the RDS host server
+    * Number per VM - Data disk number attached the per RDS host server, the value will be 1 to 4, the default is 2.
     * Disk size - Data disk size per disk, the value will be 1 to 1023, the defaut is 128GB.
 
 ### Output of template after deployment

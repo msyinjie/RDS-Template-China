@@ -54,14 +54,14 @@ Current Template is an extension to the Basic RDS Deployment Template, and it is
 * Subnet - Subnet name of pre-existing containing the AD Domain.
 * VNET ResourceGroup - The resource group name of pre-existing containing the VNET containing the AD Domain controler.
 * dnsLabelPrefix -  DNS name which is external name used to connect to environment. example name 'gateway.contoso.com' would be 'gateway'. See [Naming conventions in Active Directory](https://support.microsoft.com/en-us/help/909264/naming-conventions-in-active-directory-for-computers,-domains,-sites,-and-ous)
-* imageSKU - operating system version for all instances. '2016-Datacenter' or '2019-Datacenter',the default is '2019-Datacenter'.
+* imageSKU - operating system version for instances gateway and broker, the RDS host instances using the custom image for this deployment(see the rdshTemplateImageUri). '2016-Datacenter' or '2019-Datacenter',the default is '2019-Datacenter'.
     * PowerShell enumeration: ```Get-AzureRmVMImageSku -Location $location -PublisherName MicrosoftWindowsServer -Offer WindowsServer```
 * numberOfRdshInstances - number of RDS host servers to deploy. Other instances gateway, and broker are set to 1 instance.
-* rdshVmSize - virtual machine size for the RDS host server instances only. Other instances gateway, and broker are set to size Standard_D4_v3. 
+* rdshVmSize - virtual machine size for the RDS host server instances only. Other instances gateway, and broker are set to size **Standard_D4_v3**. 
     * PowerShell enumeration: ```Get-AzureRmVMSize -Location $location```
-* rdshTemplateImageUri - URI for the template VHD to use for RDSH instances. For example, https://rdsstorge.blob.core.chinacloudapi.cn/vhds/WindowServerOSImage.vhd, this image **MUST** based on Windows Server 2016 or Windows Server 2019 and **MUST** be Syspreped.
-* Data disk attached the RDSH server
-    * Number per VM - Data disk number attached the per RDSH server, the value will be 1 to 4, the default is 2.
+* rdshTemplateImageUri - URI for the template VHD to use for RDS host instances. For example, https://rdsstorge.blob.core.chinacloudapi.cn/vhds/WindowServerOSImage.vhd, this image **MUST** based on Windows Server 2016 or Windows Server 2019 and **MUST** be Syspreped.
+* Data disk attached the RDS host server
+    * Number per VM - Data disk number attached the per RDS host server, the value will be 1 to 4, the default is 2.
     * Disk size - Data disk size per disk, the value will be 1 to 1023, the defaut is 128GB.
 
 ### Post Deployment
