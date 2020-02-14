@@ -1,7 +1,7 @@
 {
-  "itemDisplayName": "RDS farm deployment using existing active directory",
-  "description": "This template creates a RDS farm deployment using existing active directory in resource group",
-  "summary": "Creates and deploys fully functional RDS farm deployment using existing active directory in resource group",
+  "itemDisplayName": "RDS farm deployment using existing active directory and using your custom Windows Server image for RDSH VM create.",
+  "description": "This template creates a RDS farm deployment using existing active directory in resource group, and using the custom Windows Server image for RDSH VM create.",
+  "summary": "Creates and deploys fully functional RDS farm deployment using existing active directory in resource group, and using the custom Windows Server image for RDSH VM create.",
   "githubUsername": "msyinjie",
-  "dateUpdated": "2020-02-11"
+  "dateUpdated": "2020-02-14"
 }
