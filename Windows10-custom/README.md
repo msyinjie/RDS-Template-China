@@ -4,7 +4,7 @@ This template deploys the following resources:
 
 <ul><li>public IP;</li><li>a number of Windows 10 hosts (number defined by 'numberOfInstances' parameter)</li></ul>
 
-The template will use existing DC, join all vms to the domain and configure RDS roles in the deployment.
+The template will use existing DC, join all vms to the domain.
 
 Click the button below to deploy to Azure China
 
@@ -20,7 +20,7 @@ Click the button below to deploy to Azure Global
 
 ### Prerequisites
 
-Current Template is an extension to the Basic Deployment Template, and it is mandatory to deploy any one of the template as prerequisite:
+Current Template is an extension to the Basic VM Deployment Template, and it is mandatory to deploy any one of the template as prerequisite:
 
 * Deployment on pre-existing VNET and AD (**Notice: The deploy to resource location MUST same as the pre-existing VNET containing the AD**). 
 
@@ -50,13 +50,13 @@ Current Template is an extension to the Basic Deployment Template, and it is man
 * Subnet - Subnet name of pre-existing containing the AD Domain.
 * VNET ResourceGroup - The resource group name of pre-existing containing the VNET containing the AD Domain controler.
 * dnsLabelPrefix -  DNS name which is external name used to connect to environment. example name 'gateway.contoso.com' would be 'gateway'. See [Naming conventions in Active Directory](https://support.microsoft.com/en-us/help/909264/naming-conventions-in-active-directory-for-computers,-domains,-sites,-and-ous)
-* numberOfInstances - number of Windows 10 host servers to deploy. 
-* rdshVmSize - virtual machine size for the RDS host server instances only. Other instances gateway, and broker are set to size **Standard_D4_v3**. 
+* numberOfInstances - number of Windows 10 host to deploy. the max instance limit to 99.the default is 2.
+* VmSize - virtual machine size for the Windows 10 host instances. the default is **Standard_D4_v3**. 
     * PowerShell enumeration: ```Get-AzureRmVMSize -Location $location```
 * TemplateImageUri - URI for the template VHD to use for host instances. For example, https://rdsstorge.blob.core.chinacloudapi.cn/vhds/Windows10Image.vhd, this image **MUST** based on Windows 10 and **MUST** be Syspreped.
 
 ### Connect to new deployment
-After successful deployment, the URL for the Remote Desktop will be %dnsLabelPrefix%.%location%.cloudapp.chinacloudapi.cn. 
+After successful deployment, the URL for the Remote Desktop will be %dnsLabelPrefix%-XX.%location%.cloudapp.chinacloudapi.cn(XX is 01-99). 
 
 ### Troubleshooting
 If the deployment did not complete successfully or if you are having issues connecting to the environment, use one of the options below:
@@ -69,5 +69,3 @@ In PowerShell, the following azurerm module commandlets can be used to gather de
 - Get-AzureRmLog 
 - Get-AzureRmResourceGroupDeployment
 - Get-AzureRmResourceGroupDeploymentOperation
-
-
