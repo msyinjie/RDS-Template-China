@@ -117,7 +117,6 @@
     "imageOffer": "WindowsServer",
     "licensetype": "Windows_Server",
     "dnsServerPrivateIp": "[parameters('dnsserverip')]",
-    "vnet-id": "[resourceId(parameters('existingVnetRgName'),'Microsoft.Network/virtualNetworks',parameters('existingVnetName'))]",
     "subnet-id": "[concat(resourceId(parameters('existingVnetRgName'),'Microsoft.Network/virtualNetworks',parameters('existingVnetName')),'/subnets/',parameters('existingSubnetName'))]",
     "brokerVmName": "[concat(variables('vmPrefix'), 'rdcb-01')]",
     "brokerNicName": "[concat(variables('brokerVmName'),variables('networkNameSuffix'))]",
