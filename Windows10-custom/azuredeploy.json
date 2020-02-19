@@ -1,0 +1,249 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "dnsLabelPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Unique public DNS prefix for the deployment. The fqdn will look something like '<dnsname>.chinaeast2.cloudapp.chinacloudapi.cn'. Up to 62 chars, digits or dashes, lowercase, should start with a letter: must conform to '^[a-z][a-z0-9-]{1,61}[a-z0-9]$'. For example johndns1 will result the final access DNS like johndns1-XX.chinaeast2.cloudapp.chinacloudapi.cn"
+      }
+    },
+    "existingDomainName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the AD domain. For example contoso.com"
+      },
+      "defaultValue": "contoso.com"
+    },
+    "existingVnetName": {
+      "type": "string",
+      "defaultValue": "vnet",
+      "metadata": {
+        "description": "The VNET name of AD domain. For example johnvnet1"
+      }
+    },
+    "existingSubnetName": {
+      "type": "string",
+      "defaultValue": "subnet",
+      "metadata": {
+        "description": "The subnet name of AD domain. For example johnsubnet1"
+      }
+    },
+    "existingVnetRgName": {
+      "type": "string",
+      "defaultValue": "AD-Group",
+      "metadata": {
+        "description": "The Resource Group containing the existing Virtual Network resource"
+      }
+
+    },
+    "existingAdminUserName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the administrator of the new VM and the domain. Exclusion list: 'administrator'. For example: johnadmin"
+      },
+      "defaultValue": "vmadmin"
+    },
+    "existingAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The password for the administrator account of the new VM and the domain"
+      }
+    },
+     "TemplateImageUri": {
+      "type": "string",
+      "metadata": {
+          "description": "URI for the template VHD to use for instances. For example, https://rdsstorge.blob.core.chinacloudapi.cn/vhds/Windows10Image.vhd, this image MUST based on Windows 10."
+      }
+    },
+    "numberOfInstances": {
+      "type": "int",
+      "defaultValue": 2,
+      "minValue":1,
+      "maxValue":99,
+      "metadata": {
+        "description": "Number of RemoteDesktopHosts"
+      }
+    },
+    "VmSize": {
+      "type": "string",
+      "allowedValues": [
+        "Standard_D4_v3",
+        "Standard_D2_v3"
+      ],
+      "defaultValue": "Standard_D4_v3",
+      "metadata": {
+        "description": "The size of the VMs"
+      }
+    },
+     "dnsserverip":{
+      "type": "string",
+      "metadata": {
+        "description": "The ip address for the DNS server private IP(most like the exist DC IP)"
+      },
+      "defaultValue": "10.0.0.4"
+    },
+    "_artifactsLocation": {
+      "type": "string",
+      "metadata": {
+        "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
+      },
+      "defaultValue": "https://raw.githubusercontent.com/msyinjie/RDS-Template-China/master/Windows10-custom"
+    }
+  },
+  "variables": {
+    "dnsServerPrivateIp": "[parameters('dnsserverip')]",
+    "subnet-id": "[concat(resourceId(parameters('existingVnetRgName'),'Microsoft.Network/virtualNetworks',parameters('existingVnetName')),'/subnets/',parameters('existingSubnetName'))]",
+    "publicIpprefix": "publicIp-",
+    "networkNameSuffix": "-nic",
+    "VmName": "[concat(variables('vmPrefix'), 'win10-')]",
+    "vmPrefix": "",
+    "imagename":"VM_Template_Image"
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[concat(variables('publicIpprefix'),padleft(add(copyIndex(),1),2,'0'))]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "publicip-loop",
+        "count":"[parameters('numberOfInstances')]"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "dnsSettings": {
+          "domainNameLabel": "[concat(parameters('dnsLabelPrefix'),padleft(add(copyindex(),1),2,'0'))]"
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(variables('VmName'), padLeft(add(copyindex(), 1), 2, '0'), variables('networkNameSuffix'))]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "nic-loop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/',concat(variables('publicIpprefix'),padleft(add(copyIndex(),1),2,'0')))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress":{
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat(variables('publicIpprefix'),padleft(add(copyIndex(),1),2,'0')))]"
+              },
+              "subnet": {
+                "id": "[variables('subnet-id')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": [
+              "[variables('dnsServerPrivateIp')]"
+          ]
+      }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/images",
+      "apiVersion": "2017-03-30",
+      "name": "[variables('imageName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "storageProfile": {
+          "osDisk": {
+            "osType": "Windows",
+            "osState": "Generalized",
+            "blobUri": "[parameters('TemplateImageUri')]",
+            "storageAccountType": "Standard_LRS"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-03-30",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(variables('VmName'), padLeft(add(copyindex(), 1), 2, '0'))]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "vm-loop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "dependsOn": [
+         "[concat('Microsoft.Network/networkInterfaces/', variables('VmName'), padLeft(add(copyindex(), 1), 2, '0'), variables('networkNameSuffix'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('VmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[concat(variables('VmName'), padLeft(add(copyindex(), 1), 2, '0'))]",
+          "adminUsername": "[parameters('existingAdminUserName')]",
+          "adminPassword": "[parameters('existingAdminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "id": "[resourceId('Microsoft.Compute/images', variables('imagename'))]"
+          },
+          "osDisk": {
+            "name": "[concat('win10_',padLeft(add(copyindex(), 1), 2, '0'),'_osdisk')]",
+            "osType": "Windows",
+            "caching": "ReadWrite",
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+          }
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('VmName'), padLeft(add(copyindex(), 1), 2, '0'), variables('networkNameSuffix')))]"
+            }
+          ]
+        }
+      },
+      "resources": [
+        {
+          "apiVersion": "2017-03-30",
+          "type": "Microsoft.Compute/virtualMachines/extensions",
+          "name": "[concat(variables('VmName'), padLeft(add(copyindex(), 1), 2, '0'),'/HostApply')]",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('VmName'), padLeft(add(copyindex(), 1), 2, '0')))]"
+          ],
+          "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.11",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "ModulesUrl": "[concat(parameters('_artifactsLocation'),'/DSC/Configuration.zip')]",
+              "ConfigurationFunction": "Configuration.ps1\\HostApply",
+              "Properties": {
+                "DomainName": "[parameters('existingDomainName')]",
+                "AdminCreds": {
+                  "UserName": "[parameters('existingAdminUserName')]",
+                  "Password": "PrivateSettingsRef:AdminPassword"
+                }
+              }
+            },
+            "protectedSettings": {
+              "Items": {
+                "AdminPassword": "[parameters('existingAdminPassword')]"
+              }
+            }
+          }
+        }
+      ]
+    }  
+  ]
+ 
+}

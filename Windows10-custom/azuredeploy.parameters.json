@@ -1,0 +1,42 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "_artifactsLocation": {
+      "value": "https://raw.githubusercontent.com/msyinjie/RDS-Template-China/master/Windows10-custom"
+    },
+    "dnsLabelPrefix": {
+      "value": "{enter_unique_external_fqdn_prefix_here (example:%resourceGroupName%)}"
+    },
+    "existingAdminPassword": {
+      "value": "{enter_existing_adminUsername_password_here}"
+    },
+    "existingAdminUsername": {
+      "value": "cloudadmin"
+    },
+    "existingDomainName": {
+      "value": "contoso.com"
+    },
+    "existingSubnetName": {
+      "value": "AD-Subnet"
+    },
+    "existingVnetName": {
+      "value": "AD-Vnet"
+    },
+    "existingVnetRgName": {
+      "value": "AD-Group"
+    },
+    "dnsserverip": {
+      "value": "10.0.0.4"
+    },
+    "numberOfInstances": {
+      "value": 2
+    },
+    "VmSize": {
+      "value": "Standard_D4_v3"
+    },
+    "TemplateImageUri": {
+      "value": "{enter_vhd_location_used_with_VM_OS(example:https://rdsstorge.blob.core.chinacloudapi.cn/vhds/Windows10Image.vhd)}"
+    }
+  }
+}
