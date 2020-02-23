@@ -169,8 +169,8 @@
         "storageProfile": {
           "imageReference": {
                 "publisher": "MicrosoftWindowsDesktop",
-                "offer": "Windows-10",
-                "sku": "19h1-ent-gensecond",
+                "offer": "office-365",
+                "sku": "rs5-evd-o365pp",
                 "version": "latest"
           },
           "osDisk": {
