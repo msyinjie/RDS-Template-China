@@ -50,12 +50,6 @@
         "description": "The password for the administrator account of the new VM and the domain"
       }
     },
-     "TemplateImageUri": {
-      "type": "string",
-      "metadata": {
-          "description": "URI for the template VHD to use for instances. For example, https://rdsstorge.blob.core.chinacloudapi.cn/vhds/Windows10Image.vhd, this image MUST based on Windows 10."
-      }
-    },
     "numberOfInstances": {
       "type": "int",
       "defaultValue": 2,
@@ -88,7 +82,7 @@
       "metadata": {
         "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
       },
-      "defaultValue": "https://raw.githubusercontent.com/msyinjie/RDS-Template-China/master/Windows10-custom"
+      "defaultValue": "https://raw.githubusercontent.com/msyinjie/RDS-Template-China/master/Windows10"
     }
   },
   "variables": {
@@ -97,8 +91,7 @@
     "publicIpprefix": "publicIp-",
     "networkNameSuffix": "-nic",
     "VmName": "[concat(variables('vmPrefix'), 'win10-')]",
-    "vmPrefix": "",
-    "imagename":"VM_Template_Image"
+    "vmPrefix": ""
   },
   "resources": [
     {
@@ -152,22 +145,6 @@
       }
     },
     {
-      "type": "Microsoft.Compute/images",
-      "apiVersion": "2017-03-30",
-      "name": "[variables('imageName')]",
-      "location": "[resourceGroup().location]",
-      "properties": {
-        "storageProfile": {
-          "osDisk": {
-            "osType": "Windows",
-            "osState": "Generalized",
-            "blobUri": "[parameters('TemplateImageUri')]",
-            "storageAccountType": "Standard_LRS"
-          }
-        }
-      }
-    },
-    {
       "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(variables('VmName'), padLeft(add(copyindex(), 1), 3, '0'))]",
@@ -191,7 +168,10 @@
         },
         "storageProfile": {
           "imageReference": {
-            "id": "[resourceId('Microsoft.Compute/images', variables('imagename'))]"
+                "publisher": "MicrosoftWindowsDesktop",
+                "offer": "Windows-10",
+                "sku": "19h1-ent-gensecond",
+                "version": "latest"
           },
           "osDisk": {
             "name": "[concat('win10_',padLeft(add(copyindex(), 1), 3, '0'),'_osdisk')]",
