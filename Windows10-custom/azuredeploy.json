@@ -60,7 +60,7 @@
       "type": "int",
       "defaultValue": 2,
       "minValue":1,
-      "maxValue":99,
+      "maxValue":999,
       "metadata": {
         "description": "Number of RemoteDesktopHosts"
       }
@@ -104,7 +104,7 @@
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[concat(variables('publicIpprefix'),padleft(add(copyIndex(),1),2,'0'))]",
+      "name": "[concat(variables('publicIpprefix'),padleft(add(copyIndex(),1),3,'0'))]",
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "publicip-loop",
@@ -113,21 +113,21 @@
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
-          "domainNameLabel": "[concat(parameters('dnsLabelPrefix'),padleft(add(copyindex(),1),2,'0'))]"
+          "domainNameLabel": "[concat(parameters('dnsLabelPrefix'),padleft(add(copyindex(),1),3,'0'))]"
         }
       }
     },
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[concat(variables('VmName'), padLeft(add(copyindex(), 1), 2, '0'), variables('networkNameSuffix'))]",
+      "name": "[concat(variables('VmName'), padLeft(add(copyindex(), 1), 3, '0'), variables('networkNameSuffix'))]",
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "nic-loop",
         "count": "[parameters('numberOfInstances')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/',concat(variables('publicIpprefix'),padleft(add(copyIndex(),1),2,'0')))]"
+        "[concat('Microsoft.Network/publicIPAddresses/',concat(variables('publicIpprefix'),padleft(add(copyIndex(),1),3,'0')))]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -136,7 +136,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress":{
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat(variables('publicIpprefix'),padleft(add(copyIndex(),1),2,'0')))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',concat(variables('publicIpprefix'),padleft(add(copyIndex(),1),3,'0')))]"
               },
               "subnet": {
                 "id": "[variables('subnet-id')]"
@@ -170,21 +170,21 @@
     {
       "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[concat(variables('VmName'), padLeft(add(copyindex(), 1), 2, '0'))]",
+      "name": "[concat(variables('VmName'), padLeft(add(copyindex(), 1), 3, '0'))]",
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "vm-loop",
         "count": "[parameters('numberOfInstances')]"
       },
       "dependsOn": [
-         "[concat('Microsoft.Network/networkInterfaces/', variables('VmName'), padLeft(add(copyindex(), 1), 2, '0'), variables('networkNameSuffix'))]"
+         "[concat('Microsoft.Network/networkInterfaces/', variables('VmName'), padLeft(add(copyindex(), 1), 3, '0'), variables('networkNameSuffix'))]"
       ],
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('VmSize')]"
         },
         "osProfile": {
-          "computerName": "[concat(variables('VmName'), padLeft(add(copyindex(), 1), 2, '0'))]",
+          "computerName": "[concat(variables('VmName'), padLeft(add(copyindex(), 1), 3, '0'))]",
           "adminUsername": "[parameters('existingAdminUserName')]",
           "adminPassword": "[parameters('existingAdminPassword')]"
         },
@@ -193,7 +193,7 @@
             "id": "[resourceId('Microsoft.Compute/images', variables('imagename'))]"
           },
           "osDisk": {
-            "name": "[concat('win10_',padLeft(add(copyindex(), 1), 2, '0'),'_osdisk')]",
+            "name": "[concat('win10_',padLeft(add(copyindex(), 1), 3, '0'),'_osdisk')]",
             "osType": "Windows",
             "caching": "ReadWrite",
             "createOption": "FromImage",
@@ -205,7 +205,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('VmName'), padLeft(add(copyindex(), 1), 2, '0'), variables('networkNameSuffix')))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('VmName'), padLeft(add(copyindex(), 1), 3, '0'), variables('networkNameSuffix')))]"
             }
           ]
         }
@@ -214,10 +214,10 @@
         {
           "apiVersion": "2017-03-30",
           "type": "Microsoft.Compute/virtualMachines/extensions",
-          "name": "[concat(variables('VmName'), padLeft(add(copyindex(), 1), 2, '0'),'/HostApply')]",
+          "name": "[concat(variables('VmName'), padLeft(add(copyindex(), 1), 3, '0'),'/HostApply')]",
           "location": "[resourceGroup().location]",
           "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('VmName'), padLeft(add(copyindex(), 1), 2, '0')))]"
+            "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('VmName'), padLeft(add(copyindex(), 1), 3, '0')))]"
           ],
           "properties": {
             "publisher": "Microsoft.Powershell",
