@@ -1,4 +1,4 @@
-# Create Windows 10 Collection deployment in Azure using custom image
+# Create Windows 10 Collection deployment in Azure
 
 This template deploys the following resources:
 

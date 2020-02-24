@@ -53,7 +53,7 @@ Current Template is an extension to the Basic VM Deployment Template, and it is 
 * numberOfInstances - number of Windows 10 host to deploy. the max instance limit to 999.the default is 2.
 * VmSize - virtual machine size for the Windows 10 host instances. the default is **Standard_D4_v3**. 
     * PowerShell enumeration: ```Get-AzureRmVMSize -Location $location```
-* TemplateImageUri - URI for the template VHD to use for host instances. For example, https://rdsstorge.blob.core.chinacloudapi.cn/vhds/Windows10Image.vhd, this image **MUST** based on Windows 10 and **MUST** be Syspreped.
+* TemplateImageUri - URI for the template VHD to use for host instances. For example, https://rdsstorge.blob.core.chinacloudapi.cn/vhds/Windows10Image.vhd, this image **MUST** based on Windows 10 and **MUST** be Syspreped and MUST be Generation 1(not allow Generation 2).
 
 ### Connect to new deployment
 After successful deployment, the URL for the Remote Desktop will be %dnsLabelPrefix%-XX.%location%.cloudapp.chinacloudapi.cn(XX is 01-99). 
