@@ -476,7 +476,8 @@
             "osType": "Windows",
             "osState": "Generalized",
             "blobUri": "[parameters('rdshTemplateImageUri')]",
-            "storageAccountType": "Standard_LRS"
+            "storageAccountType": "Standard_LRS",
+            "caching":"ReadWrite"
           }
         }
       }
@@ -492,7 +493,8 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Compute/availabilitySets', 'rdsh-availabilityset')]",
-        "[concat('Microsoft.Network/networkInterfaces/', variables('rdshVmName'), padLeft(add(copyindex(), 1), 3, '0'), variables('networkNameSuffix'))]"
+        "[concat('Microsoft.Network/networkInterfaces/', variables('rdshVmName'), padLeft(add(copyindex(), 1), 3, '0'), variables('networkNameSuffix'))]",
+        "[resourceId('Microsoft.Compute/images', variables('imagename'))]"
       ],
       "properties": {
         "licenseType":"[variables('licensetype')]",
