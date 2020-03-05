@@ -5,6 +5,9 @@
     "dnsLabelPrefix": {
       "value": "{enter_unique_external_fqdn_prefix_here (example:%resourceGroupName%)}"
     },
+    "prefix":{
+      "value": "vdi"
+    },
     "existingAdminPassword": {
       "value": "{enter_existing_adminUsername_password_here}"
     },
