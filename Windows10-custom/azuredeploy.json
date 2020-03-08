@@ -11,9 +11,10 @@
     "prefix":{
       "type":"string",
       "metadata":{
-        "description": "The global prefix for deployment resource VM and PublicIP"
+        "description": "The global prefix for deployment resource VM and PublicIP,this value cannot exceed 6 chars length."
       },
-      "defaultValue":"vdi"
+      "defaultValue":"vdi",
+      "maxLength":6
     },
     "existingDomainName": {
       "type": "string",
@@ -75,7 +76,9 @@
       "type": "string",
       "allowedValues": [
         "Standard_D4_v3",
-        "Standard_D2_v3"
+        "Standard_D2_v3",
+        "Standard_D2s_v3",
+        "Standard_D4s_v3"
       ],
       "defaultValue": "Standard_D2_v3",
       "metadata": {
@@ -93,9 +96,9 @@
   "variables": {
     "dnsServerPrivateIp": "[parameters('dnsserverip')]",
     "subnet-id": "[concat(resourceId(parameters('existingVnetRgName'),'Microsoft.Network/virtualNetworks',parameters('existingVnetName')),'/subnets/',parameters('existingSubnetName'))]",
-    "publicIpprefix": "[concat(variables('vmPrefix'),'-publicIp-')]",
+    "publicIpprefix": "[concat(variables('vmPrefix'),'publicIp-')]",
     "networkNameSuffix": "-nic",
-    "VmName": "[concat(variables('vmPrefix'), '-win10-')]",
+    "VmName": "[concat(variables('vmPrefix'), 'win10-')]",
     "vmPrefix": "[parameters('prefix')]",
     "imagename":"VM_Template_Image"
   },
